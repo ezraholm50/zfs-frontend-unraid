@@ -1,0 +1,72 @@
+Menu="Dashboard"
+Cond="file_exists('/usr/sbin/zpool')"
+---
+<style type="text/css">
+#	.dash_corsairpsu_toggle {display:none;}	
+#	.dash_corsairpsu_header {padding-top: 20px}	
+	.dash_corsairpsu_section {
+		line-height:1.4em !important;
+		margin-left:-4px !important;
+	}
+</style>
+<table id="db-box1" class="dash_corsairpsu dashboard box1" style="display:none">
+    <thead sort="965" class="sortable">
+        <tr>
+            <td></td>
+            <td class="next dash_corsairpsu_header" colspan="3">
+                <div class="section dash_corsairpsu_section">ZFS
+                    </span>
+                    <br>
+                </div>
+            </td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Pool: <span id="corsair-pool"></span></td>
+       </tr>
+       <tr>
+		<br>
+            <td>State: <span id="corsair-state"></span></td>
+       </tr>
+       <tr>
+           	<br>
+            <td>Errors <span id="corsair-errors"></span></td>
+       </tr>
+       <tr>
+                <br>
+            <td>Scan: <span id="corsair-scan"></span></td>
+       </tr>
+       <tr>
+                <br>
+            <td>Config <span id="corsair-config"></span></td>
+        </tr>
+    </tbody>
+</table>
+
+<script>
+const corsairpsu_status = () => {
+ $.getJSON("/plugins/corsairpsu/status.php", (data) => {
+  if(data) {
+	$.each(data, function (key, data) {
+		$("#corsair-"+key).html(data);
+    })
+  }
+<?if ($update):?>
+  setTimeout(corsairpsu_status, <?=max(abs($display["refresh"]),2000)?>);
+<?endif;?>
+ });
+};
+$(corsairpsu_status);
+
+$(function() {
+  // append data from the table into the correct one
+  $("#db-box1").append($(".dash_corsairpsu").html());
+  
+  // reload toggle to get the correct state
+  toggleView('dash_corsairpsu_toggle',true);
+  
+  // reload sorting to get the stored data (cookie)
+  sortTable($('#db-box1'),$.cookie('db-box1'));
+});
+</script>
